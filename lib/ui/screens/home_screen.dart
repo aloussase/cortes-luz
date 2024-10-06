@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:cortes_energia/domain/models/criterio.dart';
 import 'package:cortes_energia/ui/viewmodels/home_viewmodel.dart';
+import 'package:cortes_energia/ui/widgets/text_divider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,22 +46,27 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              const Center(
-                child: Text(
-                  "Consulta tu horario de corte de luz",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                const Center(
+                  child: Text(
+                    "Consulta tu horario de corte de luz",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-              ConsultarHorariosForm(),
-            ],
+                const SizedBox(height: 20),
+                ConsultarHorariosForm(),
+                const SizedBox(height: 20),
+                const CortesLuzInformation(),
+              ],
+            ),
           ),
         ),
       ),
@@ -67,10 +74,36 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class ConsultarHorariosForm extends StatelessWidget {
+class ConsultarHorariosForm extends StatefulWidget {
+  const ConsultarHorariosForm({super.key});
+
+  @override
+  State<ConsultarHorariosForm> createState() => _ConsultarHorariosFormState();
+}
+
+class _ConsultarHorariosFormState extends State<ConsultarHorariosForm> {
   final _formKey = GlobalKey<FormState>();
 
-  ConsultarHorariosForm({super.key});
+  final _documentoController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    final viewModel = context.read<HomeViewModel>();
+
+    _documentoController.addListener(
+      () => viewModel.add(
+        DocumentoChanged(documento: _documentoController.text),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _documentoController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +114,7 @@ class ConsultarHorariosForm extends StatelessWidget {
           child: Column(
             children: [
               TextFormField(
+                controller: _documentoController,
                 decoration: const InputDecoration(
                   hintText: "Ingrese el número de documento",
                   label: Text("Documento"),
@@ -91,11 +125,6 @@ class ConsultarHorariosForm extends StatelessWidget {
                     return 'El número de documento es obligatorio';
                   }
                   return null;
-                },
-                onChanged: (value) {
-                  context
-                      .read<HomeViewModel>()
-                      .add(DocumentoChanged(documento: value));
                 },
               ),
               const SizedBox(height: 10),
@@ -108,6 +137,7 @@ class ConsultarHorariosForm extends StatelessWidget {
                     );
                   },
                 ).toList(),
+                value: state.criterio,
                 onChanged: (value) {
                   context
                       .read<HomeViewModel>()
@@ -137,6 +167,52 @@ class ConsultarHorariosForm extends StatelessWidget {
               )
             ],
           ),
+        );
+      },
+    );
+  }
+}
+
+class CortesLuzInformation extends StatelessWidget {
+  const CortesLuzInformation({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<HomeViewModel, HomeState>(
+      builder: (context, state) {
+        if (state.information == null) {
+          return const Column();
+        }
+
+        final information = state.information!;
+
+        return Column(
+          children: [
+            const TextDivider(
+              text: "Información",
+              color: Colors.blue,
+            ),
+            const SizedBox(height: 20),
+            StaggeredGrid.count(
+              crossAxisCount: 2,
+              mainAxisSpacing: 5,
+              children: [
+                const Text("Alimentador"),
+                Text(information.alimentador),
+                const Text("Cuenta"),
+                Text(information.cuenta),
+                const Text("Contrato"),
+                Text(information.cuentaContrato),
+                const Text("Dirección"),
+                Text(information.direccion),
+              ],
+            ),
+            const SizedBox(height: 20),
+            const TextDivider(
+              text: 'Cortes de Luz',
+              color: Colors.blue,
+            ),
+          ],
         );
       },
     );

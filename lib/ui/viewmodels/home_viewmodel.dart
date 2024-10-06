@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:cortes_energia/domain/models/cortes_luz_information.dart';
+import 'package:cortes_energia/domain/models/criterio.dart';
 import 'package:cortes_energia/domain/repository/cortes_luz_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fpdart/fpdart.dart';
@@ -15,18 +17,21 @@ final class HomeState {
   final String criterio;
   final String documento;
   final HomeStatus status;
+  final CortesLuzInformation? information;
 
   HomeState({
     required this.criterio,
     required this.documento,
     required this.status,
+    required this.information,
   });
 
   factory HomeState.empty() {
     return HomeState(
-      criterio: "",
+      criterio: Criterio.cuentaContrato.value,
       documento: "",
       status: HomeStatus.initial,
+      information: null,
     );
   }
 
@@ -34,11 +39,13 @@ final class HomeState {
     String? criterio,
     String? documento,
     HomeStatus? status,
+    CortesLuzInformation? information,
   }) {
     return HomeState(
       criterio: criterio ?? this.criterio,
       documento: documento ?? this.documento,
       status: status ?? this.status,
+      information: information ?? this.information,
     );
   }
 }
@@ -143,9 +150,9 @@ class HomeViewModel extends Bloc<HomeEvent, HomeState> {
         emit(
           state.copyWith(
             status: HomeStatus.success,
+            information: information,
           ),
         );
-        print(information.alimentador);
     }
   }
 }
