@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cortes_energia/domain/models/criterio.dart';
 import 'package:cortes_energia/domain/models/horario_corte.dart';
 import 'package:cortes_energia/ui/viewmodels/home_viewmodel.dart';
+import 'package:cortes_energia/ui/widgets/app_bar.dart';
 import 'package:cortes_energia/ui/widgets/illuminating_light_bulb.dart';
 import 'package:cortes_energia/ui/widgets/text_divider.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
+      appBar: MyAppBar(),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
