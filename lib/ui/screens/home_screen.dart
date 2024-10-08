@@ -20,23 +20,24 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late final StreamSubscription<UiMessage> _subscription;
 
-  var _lightsOn = false;
-
   @override
   void initState() {
     super.initState();
 
     _subscription = context.read<HomeViewModel>().messages.listen(
       (message) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message.message),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: message.type == UiMessageKind.error
-                ? Colors.red
-                : Colors.indigo,
-          ),
-        );
+        if (message.type == UiMessageKind.success ||
+            message.type == UiMessageKind.error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message.message),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: message.type == UiMessageKind.error
+                  ? Colors.red
+                  : Colors.indigo,
+            ),
+          );
+        }
       },
     );
   }
@@ -105,6 +106,14 @@ class _ConsultarHorariosFormState extends State<ConsultarHorariosForm> {
         DocumentoChanged(documento: _documentoController.text),
       ),
     );
+
+    viewModel.messages.listen(
+      (message) {
+        if (message.type == UiMessageKind.documentNumber) {
+          _documentoController.text = message.message;
+        }
+      },
+    );
   }
 
   @override
@@ -123,6 +132,7 @@ class _ConsultarHorariosFormState extends State<ConsultarHorariosForm> {
             children: [
               TextFormField(
                 controller: _documentoController,
+                enableInteractiveSelection: true,
                 decoration: const InputDecoration(
                   hintText: "Ingrese el número de documento",
                   label: Text("Documento"),
@@ -134,6 +144,17 @@ class _ConsultarHorariosFormState extends State<ConsultarHorariosForm> {
                   }
                   return null;
                 },
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => context
+                        .read<HomeViewModel>()
+                        .add(GetMostRecentDocumentNumber()),
+                    child: const Text("Cargar último documento usado"),
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
               DropdownButtonFormField(

@@ -1,10 +1,12 @@
 import 'package:cortes_energia/data/repository/cnel_cortes_luz_repository.dart';
+import 'package:cortes_energia/data/repository/shared_prefs_documents_repository.dart';
 import 'package:cortes_energia/ui/screens/home_screen.dart';
 import 'package:cortes_energia/ui/viewmodels/home_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
   runApp(const MyApp());
 }
 
@@ -32,6 +34,9 @@ class MyApp extends StatelessWidget {
       home: BlocProvider(
         create: (_) => HomeViewModel(
           CnelCortesLuzRepository(),
+          SharedPrefsDocumentsRepository(
+            SharedPreferencesAsync(),
+          ),
         ),
         child: const HomeScreen(),
       ),
