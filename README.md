@@ -1,11 +1,11 @@
-<h2 align="center">Cortes de Luz</h2>
+<h2 align="center">Sin Energía 🙅💡</h2>
 
 <p align="center">
 <img alt="preview" src="./assets/preview.png" width="280" />
 </p>
 
 <p align="center">
-  Una aplicación móvil para que puedas consultar tu horario de corte de luz.
+  Una aplicación móvil para que puedas consultar tu horario de corte de energía.
 </p>
 
 ## Instalación
